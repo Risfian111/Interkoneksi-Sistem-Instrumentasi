@@ -299,7 +299,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
 cargo.toml
 
 ```
-cargo.toml
 
 [package]
 name = "sht20"
