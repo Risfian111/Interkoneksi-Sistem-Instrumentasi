@@ -2,17 +2,24 @@
 
 💡 Inovasi Presisi untuk Gudang Jagung — Transparansi, Keamanan, dan Efisiensi Rantai Pasok 💡
 
+
 📘 Deskripsi Proyek
 Sistem ini dikembangkan untuk mendukung penyimpanan komoditas pertanian, khususnya jagung, agar tetap aman, berkualitas, dan memenuhi standar pangan. Dengan memanfaatkan teknologi Internet of Things (IoT), sistem membaca suhu dan kelembaban gudang secara real-time menggunakan sensor industri (SHT20/Modbus).
+
 
 🌐 Data lingkungan disimpan secara historis di InfluxDB, divisualisasikan melalui Grafana dan Qt GUI, dan dicatat dalam bentuk hash ringkasan ke Ethereum Blockchain guna menjamin integritas, transparansi, dan akuntabilitas data.
 
 🚜 Sistem ini mendukung transformasi Agriculture 4.0, memperkuat daya saing produk lokal, mengurangi kerugian pascapanen, dan mendorong kepercayaan antar pelaku rantai pasok, mulai dari petani hingga konsumen.
 
+
 🎓 Mata Kuliah
+
 🛠 Interkoneksi Sistem Instrumentasi – VI231418
+
 👨‍🏫 Dosen Pengampu: Ahmad Radhy, S.Si., M.Si.
+
 🏫 Program Studi Rekayasa Teknologi Instrumentasi – Fakultas Vokasi ITS
+
 
 👥 Anggota Tim
 
@@ -21,6 +28,7 @@ Andre Mahesa Bagaskara	2042231012
 Cahyo Okto Risfian	2042231044
 
 Siti Aisyah	2042231062
+
 
 ⚙️ Fitur Utama Sistem
 
@@ -34,6 +42,7 @@ Siti Aisyah	2042231062
 
 ✅ DApp Web3 untuk verifikasi publik data ringkasan lingkungan gudang
 
+
 🛠️ Implementasi & Kode
 
 💻 Modbus Client (Rust) — Membaca data sensor, mengemas dalam JSON, kirim ke TCP Server
@@ -43,6 +52,7 @@ Siti Aisyah	2042231062
 💾 InfluxDB + Grafana — Menyimpan dan menampilkan data secara real-time dan historis
 
 🔗 Blockchain + DApp — Hash data dicatat ke Ethereum, diverifikasi publik lewat Web3
+
 
 📚 Hasil & Analisa
 
@@ -62,7 +72,9 @@ Siti Aisyah	2042231062
 
 🛒 Pembuatan dashboard marketplace internal untuk rantai pasok
 
+
 🌟 Lisensi
 📌 CORNTECH_TEKINS23_ITS
+
 
 🏷️ “Simpan Lebih Aman, Panen Lebih Terjamin — Transformasi Digital untuk Komoditas Pertanian Indonesia.”
