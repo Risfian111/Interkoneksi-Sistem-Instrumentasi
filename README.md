@@ -1,82 +1,103 @@
-🌾 CORNTECH: Sistem Monitoring Suhu dan Kelembaban Terintegrasi IoT dan Blockchain untuk Penyimpanan Aman dan Berkualitas Komoditas Pertanian 🌾
+# 🌾 CORNTECH: Sistem Monitoring Suhu dan Kelembaban Terintegrasi IoT dan Blockchain untuk Penyimpanan Aman dan Berkualitas Komoditas Pertanian
 
-💡 Inovasi Presisi untuk Gudang Jagung — Transparansi, Keamanan, dan Efisiensi Rantai Pasok 💡
+## 📘 Deskripsi Proyek
 
+**CORNTECH** adalah sistem monitoring suhu dan kelembaban real-time berbasis IoT yang dirancang untuk meningkatkan kualitas dan keamanan penyimpanan komoditas pertanian, khususnya **jagung**. Dengan pendekatan teknologi **IoT** dan **Blockchain**, sistem ini menjamin **transparansi**, **integritas data**, dan **efisiensi dalam rantai pasok pertanian**.
 
-📘 Deskripsi Proyek
-Sistem ini dikembangkan untuk mendukung penyimpanan komoditas pertanian, khususnya jagung, agar tetap aman, berkualitas, dan memenuhi standar pangan. Dengan memanfaatkan teknologi Internet of Things (IoT), sistem membaca suhu dan kelembaban gudang secara real-time menggunakan sensor industri (SHT20/Modbus).
+Teknologi yang digunakan mencakup sensor industri SHT20 (Modbus), penyimpanan data time-series menggunakan **InfluxDB**, visualisasi melalui **Grafana** dan **Qt GUI**, serta pencatatan hash data ringkasan ke jaringan **Ethereum Blockchain**.
 
+## 🧠 Tujuan
 
-🌐 Data lingkungan disimpan secara historis di InfluxDB, divisualisasikan melalui Grafana dan Qt GUI, dan dicatat dalam bentuk hash ringkasan ke Ethereum Blockchain guna menjamin integritas, transparansi, dan akuntabilitas data.
+- Menjaga kualitas komoditas pertanian selama masa penyimpanan
+- Mengurangi potensi kerugian akibat suhu/kelembaban yang tidak terkontrol
+- Meningkatkan transparansi dan kepercayaan antar pelaku rantai pasok
+- Mendukung transformasi menuju **Agriculture 4.0**
 
-🚜 Sistem ini mendukung transformasi Agriculture 4.0, memperkuat daya saing produk lokal, mengurangi kerugian pascapanen, dan mendorong kepercayaan antar pelaku rantai pasok, mulai dari petani hingga konsumen.
+---
 
+## 🎓 Informasi Akademik
 
-🎓 Mata Kuliah
+- **Mata Kuliah**: Interkoneksi Sistem Instrumentasi – VI231418  
+- **Dosen Pengampu**: Ahmad Radhy, S.Si., M.Si.  
+- **Program Studi**: Rekayasa Teknologi Instrumentasi – Fakultas Vokasi ITS
 
-🛠 Interkoneksi Sistem Instrumentasi – VI231418
+### 👥 Anggota Tim
 
-👨‍🏫 Dosen Pengampu: Ahmad Radhy, S.Si., M.Si.
+| Nama | NRP |
+|------|-----|
+| Andre Mahesa Bagaskara | 2042231012 |
+| Cahyo Okto Risfian | 2042231044 |
+| Siti Aisyah | 2042231062 |
 
-🏫 Program Studi Rekayasa Teknologi Instrumentasi – Fakultas Vokasi ITS
+---
 
+## ⚙️ Fitur Utama
 
-👥 Anggota Tim
+- ✅ **Monitoring suhu & kelembaban** menggunakan sensor SHT20 via Modbus RTU/TCP
+- ✅ **Penyimpanan data historis** dengan InfluxDB
+- ✅ **Visualisasi interaktif** dengan Grafana dan Qt GUI
+- ✅ **Pencatatan hash ringkasan data** ke Ethereum Blockchain
+- ✅ **Web3 DApp** untuk verifikasi data oleh publik
 
-Andre Mahesa Bagaskara	2042231012
+---
 
-Cahyo Okto Risfian	2042231044
+## 🛠️ Arsitektur Sistem
 
-Siti Aisyah	2042231062
+```
+[SHT20 Sensor] --> [Modbus Client (Rust)] --> [TCP Server (Rust)] --> [InfluxDB] --> [Grafana / Qt GUI]
+                                                                      |
+                                                                      +--> [Ethereum Blockchain + DApp]
+```
 
+---
 
-⚙️ Fitur Utama Sistem
+## 📦 Implementasi
 
-✅ Monitoring suhu & kelembaban real-time dengan sensor SHT20 berbasis Modbus RTU/TCP
+📁 Struktur kode terdapat dalam repositori dengan penjelasan masing-masing komponen.
 
-✅ Penyimpanan data historis dengan InfluxDB (efisien dan mendukung query time-series)
+### 💻 Modbus Client (Rust)
+- Membaca data dari sensor SHT20 melalui Modbus RTU
+- Mengemas data menjadi format JSON
+- Mengirimkan ke TCP Server
 
-✅ Visualisasi data interaktif melalui dashboard Grafana 🌐 dan Qt GUI 💻
+### 💻 TCP Server (Rust)
+- Menerima data dari Modbus Client
+- Parsing dan simpan data ke InfluxDB
+- Mengelola hash ringkasan data untuk dicatat ke Ethereum
 
-✅ Pencatatan hash ringkasan data ke Ethereum Blockchain untuk integritas & transparansi data
+### 💾 InfluxDB + Grafana
+- Menyimpan dan menampilkan data historis dan real-time
 
-✅ DApp Web3 untuk verifikasi publik data ringkasan lingkungan gudang
+### 🔗 Blockchain + DApp
+- Hash ringkasan data dicatat ke Ethereum
+- DApp berbasis Web3 digunakan untuk verifikasi publik
 
+---
 
-🛠️ Implementasi & Kode
+## 📊 Hasil & Analisis
 
-Program Code terdapat pada file README(1).md
+- 🌡️ Data suhu dan kelembaban berhasil dibaca dan disimpan di InfluxDB
+- 📈 Visualisasi data real-time menggunakan Grafana dan Qt GUI
+- 🔐 Hash data tercatat di Ethereum Blockchain dan diverifikasi melalui DApp
 
-💻 Modbus Client (Rust) — Membaca data sensor, mengemas dalam JSON, kirim ke TCP Server
+---
 
-💻 TCP Server (Rust) — Menerima data, parsing, menyimpan ke InfluxDB, mengelola hash untuk blockchain
+## 🚀 Pengembangan Selanjutnya
 
-💾 InfluxDB + Grafana — Menyimpan dan menampilkan data secara real-time dan historis
+- 🤖 Integrasi AI untuk prediksi kualitas penyimpanan & rekomendasi aksi
+- 🎥 Kamera mini untuk monitoring visual gudang
+- 🛰️ Integrasi GPS dan IoT untuk distribusi multi-lokasi
+- 🛒 Dashboard marketplace internal untuk rantai pasok pertanian
 
-🔗 Blockchain + DApp — Hash data dicatat ke Ethereum, diverifikasi publik lewat Web3
+---
 
+## 📝 Lisensi
 
-📚 Hasil & Analisa
+CORNTECH_TEKINS23_ITS  
+Hak Cipta © 2025 - Tim CORNTECH
 
-🌡️ Hasil pembacaan suhu & kelembaban selama penyimpanan
+---
 
-📈 Data tersimpan di InfluxDB & divisualisasikan real-time di Grafana
+## 🏷️ Slogan
 
-🌐 Hash ringkasan data tercatat di Blockchain, diverifikasi via DApp
-
-🚀 Saran Pengembangan Selanjutnya
-
-🤖 Integrasi AI untuk prediksi kualitas penyimpanan dan rekomendasi tindakan
-
-🎥 Penambahan kamera mini untuk monitoring visual gudang
-
-🛰️ Integrasi GPS + IoT untuk sistem distribusi multi-lokasi
-
-🛒 Pembuatan dashboard marketplace internal untuk rantai pasok
-
-
-🌟 Lisensi
-📌 CORNTECH_TEKINS23_ITS
-
-
-🏷️ “Simpan Lebih Aman, Panen Lebih Terjamin — Transformasi Digital untuk Komoditas Pertanian Indonesia.”
+> “Simpan Lebih Aman, Panen Lebih Terjamin — Transformasi Digital untuk Komoditas Pertanian Indonesia.”
