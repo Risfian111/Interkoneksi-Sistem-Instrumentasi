@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>500</width>
+    <height>400</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Smart Agriculture Monitor</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+
+    <!-- Status Sensor -->
+    <item>
+     <widget class="QLabel" name="labelSensorStatus">
+      <property name="text">
+       <string>Sensor: ❌ Disconnected</string>
+      </property>
+     </widget>
+    </item>
+
+    <!-- Status Server -->
+    <item>
+     <widget class="QLabel" name="labelServerStatus">
+      <property name="text">
+       <string>Server: ❌ Disconnected</string>
+      </property>
+     </widget>
+    </item>
+
+    <!-- Tombol Start/Stop -->
+    <item>
+     <widget class="QPushButton" name="btnStartStop">
+      <property name="text">
+       <string>Start</string>
+      </property>
+     </widget>
+    </item>
+
+    <!-- Tampilan Suhu -->
+    <item>
+     <widget class="QLabel" name="labelTemperature">
+      <property name="text">
+       <string>Suhu: -- °C</string>
+      </property>
+     </widget>
+    </item>
+
+    <!-- Tampilan Kelembaban -->
+    <item>
+     <widget class="QLabel" name="labelHumidity">
+      <property name="text">
+       <string>Kelembaban: -- %</string>
+      </property>
+     </widget>
+    </item>
+
+    <!-- Input Batas Suhu -->
+    <item>
+     <layout class="QHBoxLayout" name="tempLimitLayout">
+      <item>
+       <widget class="QLabel" name="labelTempLimit">
+        <property name="text">
+         <string>Batas Suhu:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="lineEditTempLimit"/>
+      </item>
+     </layout>
+    </item>
+
+    <!-- Input Batas Kelembaban -->
+    <item>
+     <layout class="QHBoxLayout" name="humLimitLayout">
+      <item>
+       <widget class="QLabel" name="labelHumLimit">
+        <property name="text">
+         <string>Batas Kelembaban:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="lineEditHumLimit"/>
+      </item>
+     </layout>
+    </item>
+
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar"/>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
