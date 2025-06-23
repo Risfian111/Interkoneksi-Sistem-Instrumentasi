@@ -1,98 +1,104 @@
+use chrono::{Local, SecondsFormat};
+use tokio_modbus::{client::rtu, prelude::*};
+use tokio_serial::SerialStream;
 use tokio::{
-    io::AsyncReadExt,
-    net::TcpListener,
+    net::TcpStream,
+    time::{sleep, Duration},
+    io::{AsyncReadExt, AsyncWriteExt},
 };
-use influxdb2::{Client, models::DataPoint};
-use serde::Deserialize;
-use futures::stream;
-use chrono::{Utc, DateTime};
-use std::env;
-use dotenvy::dotenv;
-use anyhow::Result;
+use serde_json::json;
+use std::error::Error;
 
-#[derive(Debug, Deserialize)]
-struct SensorData {
-    timestamp: String,
-    sensor_id: String,
-    location: String,
-    process_stage: String,
-    temperature: f64,
-    humidity: f64,
+async fn sht20(slave: u8) -> Result<Vec<u16>, Box<dyn std::error::Error>> {
+    let port_settings = tokio_serial::new("/dev/ttyUSB0", 9600)
+        .parity(tokio_serial::Parity::None)
+        .stop_bits(tokio_serial::StopBits::One)
+        .data_bits(tokio_serial::DataBits::Eight)
+        .timeout(Duration::from_secs(1));
+
+    let port = SerialStream::open(&port_settings)?;
+    let slave = Slave(slave);
+    let mut ctx = rtu::attach_slave(port, slave);
+    let response = ctx.read_input_registers(1, 2).await?;
+
+    Ok(response)
+}
+
+async fn send_to_server(
+    sensor_id: &str,
+    location: &str,
+    process_stage: &str,
+    temperature: f32,
+    humidity: f32,
+    timestamp: chrono::DateTime<Local>,
+) -> Result<(), Box<dyn Error>> {
+    let mut stream = TcpStream::connect("127.0.0.1:7979").await?;
+
+    let payload = json!({
+        "timestamp": timestamp.to_rfc3339_opts(SecondsFormat::Secs, true),
+        "sensor_id": sensor_id,
+        "location": location,
+        "process_stage": process_stage,
+        "temperature": temperature,
+        "humidity": humidity
+    });
+
+    let json_str = payload.to_string();
+    println!("📤 Sending JSON: {}", json_str);
+
+    stream.write_all(json_str.as_bytes()).await?;
+    stream.write_all(b"\n").await?;
+
+    let mut buf = [0; 1024];
+    if let Ok(n) = stream.read(&mut buf).await {
+        if n > 0 {
+            println!("📥 Server response: {}", std::str::from_utf8(&buf[..n])?);
+        }
+    }
+
+    Ok(())
 }
 
 #[tokio::main]
-async fn main() -> Result<()> {
-    dotenv().ok();
-
-    let influxdb_url = env::var("INFLUXDB_URL").unwrap_or_else(|_| "http://localhost:8086".into());
-    let influxdb_token = env::var("INFLUXDB_TOKEN").unwrap_or_else(|_| "kfVeQsmcnkKXFABXQr9-TJSZ3G_Wz2Xo4kmTDgFlwo-jvCTUyltw6NTqule_MOZNZdsVQfieX80g-Ycz76dcSA==".into());
-    let org = env::var("INFLUXDB_ORG").unwrap_or_else(|_| "Interkoneksi".into());
-    let bucket = env::var("INFLUXDB_BUCKET").unwrap_or_else(|_| "ISI".into());
-
-    let client = Client::new(influxdb_url.clone(), org.clone(), influxdb_token.clone());
-
-    // Cek koneksi InfluxDB
-    let health = client.health().await?;
-    if health.status != influxdb2::models::Status::Pass {
-        eprintln!("❌ InfluxDB tidak sehat: {:?}", health.status);
-        return Ok(());
-    }
-    println!("✅ Terhubung ke InfluxDB: {:?}", health.status);
-
-    // Jalankan TCP server
-    let listener = TcpListener::bind("0.0.0.0:7979").await?;
-    println!("📡 TCP Server berjalan di port 7979...");
+async fn main() -> Result<(), Box<dyn Error>> {
+    let sensor_id = "SHT20-PascaPanen-001";
+    let location = "Gudang Fermentasi 1";
+    let process_stage = "Fermentasi";
 
     loop {
-        let (mut socket, addr) = listener.accept().await?;
-        println!("🔌 Koneksi dari {}", addr);
+        let timestamp = Local::now();
 
-        let client = client.clone();
-        let bucket = bucket.clone();
-        let org = org.clone();
+        match sht20(1).await {
+            Ok(response) if response.len() == 2 => {
+                let temp = response[0] as f32 / 10.0;
+                let rh = response[1] as f32 / 10.0;
 
-        tokio::spawn(async move {
-            let mut buffer = vec![0; 1024];
-            match socket.read(&mut buffer).await {
-                Ok(n) if n > 0 => {
-                    let data = &buffer[..n];
-                    println!("📥 Data masuk: {}", String::from_utf8_lossy(data));
+                println!(
+                    "[{}] ✅ Data Modbus - {}: Temp = {:.1}°C, RH = {:.1}%",
+                    timestamp.format("%Y-%m-%d %H:%M:%S"),
+                    location,
+                    temp,
+                    rh
+                );
 
-                    let sensor_data: SensorData = match serde_json::from_slice(data) {
-                        Ok(d) => d,
-                        Err(e) => {
-                            eprintln!("❌ Gagal parsing JSON: {}", e);
-                            return;
-                        }
-                    };
-
-                    println!("✅ Parsed SensorData: {:?}", sensor_data);
-
-                    let timestamp = DateTime::parse_from_rfc3339(&sensor_data.timestamp)
-                        .map(|dt| dt.timestamp_nanos())
-                        .unwrap_or_else(|_| Utc::now().timestamp_nanos());
-
-                    let point = DataPoint::builder("sensor_data")
-                        .tag("sensor_id", sensor_data.sensor_id)
-                        .tag("location", sensor_data.location)
-                        .tag("process_stage", sensor_data.process_stage)
-                        .field("temperature", sensor_data.temperature)
-                        .field("humidity", sensor_data.humidity)
-                        .timestamp(timestamp)
-                        .build()
-                        .unwrap();
-
-                    println!("📤 Menulis ke InfluxDB -> Org: {}, Bucket: {}", org, bucket);
-
-                    if let Err(e) = client.write(&bucket, stream::once(async { point })).await {
-                        eprintln!("❌ Gagal menulis ke InfluxDB: {}", e);
-                    } else {
-                        println!("✅ Data berhasil ditulis ke InfluxDB.");
-                    }
+                println!("📡 Mengirim data ke TCP server...");
+                if let Err(e) = send_to_server(
+                    sensor_id,
+                    location,
+                    process_stage,
+                    temp,
+                    rh,
+                    timestamp,
+                )
+                .await
+                {
+                    eprintln!("❌ Gagal mengirim data: {}", e);
                 }
-                Ok(_) => println!("⚠️ Tidak ada data diterima."),
-                Err(e) => eprintln!("❌ Kesalahan saat membaca socket: {}", e),
             }
-        });
+            Ok(invalid) => eprintln!("⚠️ Respon Modbus tidak valid: {:?}", invalid),
+            Err(e) => eprintln!("❌ Gagal membaca sensor Modbus: {}", e),
+        }
+
+        sleep(Duration::from_secs(10)).await;
     }
 }
